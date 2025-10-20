@@ -31,14 +31,7 @@ export default function Header() {
                     <p className="p-2 lg:px-6 lg:py-3 rounded-full flex justify-center items-center
                 lg:hover:bg-indigo-300 duration-200
                 ">
-                        <a href="https://github.com/Oozankilic"
-                            target="_blank"
-                            className="flex items-center justify-center gap-1">
-                            <span className="">
-                                <Image src="/github-mark.png" alt="GitHub Logo" width={20} height={20} />
-                            </span>
-                            <span>Github</span>
-                        </a>
+                        
                     </p>
                 </div>
             </div>
