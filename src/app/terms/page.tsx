@@ -15,115 +15,136 @@ export default function Terms() {
                     <Markdown>
                         {`                     
 ---
-Last updated: July 29, 2024
-Please read these terms and conditions carefully before using Our Service.
-Interpretation and Definitions
-Interpretation
-The words of which the initial letter is capitalized have meanings defined under the following conditions. The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.
-Definitions
-For the purposes of these Terms and Conditions:
-* Application means the software program provided by the Company downloaded by You on any electronic device, named Song AI : AI Generates Music.
-* Application Store means the digital distribution service operated and developed by Apple Inc. (Apple App Store) or Google Inc. (Google Play Store) in which the Application has been downloaded.
-* Affiliate means an entity that controls, is controlled by or is under common control with a party, where "control" means ownership of 50% or more of the shares, equity interest or other securities entitled to vote for election of directors or other managing authority.
-* Account means a unique account created for You to access our Service or parts of our Service.
-* Company (referred to as either "the Company", "We", "Us" or "Our" in this Agreement) refers to Song AI : AI Generates Music.
-* Device means any device that can access the Service such as a computer, a cellphone or a digital tablet.
-* Feedback means feedback, innovations or suggestions sent by You regarding the attributes, performance or features of our Service.
-* In-app Purchase refers to the purchase of a product, item, service or Subscription made through the Application and subject to these Terms and Conditions and/or the Application Store's own terms and conditions.
-* Promotions refer to contests, sweepstakes or other promotions offered through the Service.
-* Service refers to the Application.
-* Subscriptions refer to the services or access to the Service offered on a subscription basis by the Company to You.
-* Terms and Conditions (also referred as "Terms") mean these Terms and Conditions that form the entire agreement between You and the Company regarding the use of the Service.
-* Third-party Social Media Service means any services or content (including data, information, products or services) provided by a third-party that may be displayed, included or made available by the Service.
-* You means the individual accessing or using the Service, or the company, or other legal entity on behalf of which such individual is accessing or using the Service, as applicable.
-Acknowledgment
-These are the Terms and Conditions governing the use of this Service and the agreement that operates between You and the Company. These Terms and Conditions set out the rights and obligations of all users regarding the use of the Service.
-Your access to and use of the Service is conditioned on Your acceptance of and compliance with these Terms and Conditions. These Terms and Conditions apply to all visitors, users and others who access or use the Service.
-By accessing or using the Service You agree to be bound by these Terms and Conditions. If You disagree with any part of these Terms and Conditions then You may not access the Service.
-You represent that you are over the age of 18. The Company does not permit those under 18 to use the Service.
-Your access to and use of the Service is also conditioned on Your acceptance of and compliance with the Privacy Policy of the Company. Our Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your personal information when You use the Application or the Website and tells You about Your privacy rights and how the law protects You. Please read Our Privacy Policy carefully before using Our Service.
-Subscriptions
-Subscription Types and Credits
-Weekly Subscription: Updates user's credits to 20 every week. Each credit can send one song creation request and 2 different songs are generated.
-Monthly Subscription: Updates user's credits to 80 every month. Each credit can send one song creation request and 2 different songs are generated.
-Annual Subscription: Updates user's credits to 320 every year. Each credit can send one song creation request and 2 different songs are generated.
-Subscription period
-The Service or some parts of the Service are available only with a paid Subscription. You will be billed in advance on a recurring and periodic basis (such as daily, weekly, monthly or annually), depending on the type of Subscription plan you select when purchasing the Subscription.
-At the end of each period, Your Subscription will automatically renew under the exact same conditions unless You cancel it or the Company cancels it.
-Subscription cancellations
-You may cancel Your Subscription renewal either through Your Account settings page or by contacting the Company. You will not receive a refund for the fees You already paid for Your current Subscription period and You will be able to access the Service until the end of Your current Subscription period.
-If the Subscription has been made through an In-app Purchase, You can cancel the renewal of Your Subscription with the Application Store.
-Billing
-You shall provide the Company with accurate and complete billing information including full name, address, state, zip code, telephone number, and a valid payment method information.
-Should automatic billing fail to occur for any reason, the Company will issue an electronic invoice indicating that you must proceed manually, within a certain deadline date, with the full payment corresponding to the billing period as indicated on the invoice.
-If the Subscription has been made through an In-app Purchase, all billing is handled by the Application Store and is governed by the Application Store's own terms and conditions.
-Fee Changes
-The Company, in its sole discretion and at any time, may modify the Subscription fees. Any Subscription fee change will become effective at the end of the then-current Subscription period.
-The Company will provide You with reasonable prior notice of any change in Subscription fees to give You an opportunity to terminate Your Subscription before such change becomes effective.
-Your continued use of the Service after the Subscription fee change comes into effect constitutes Your agreement to pay the modified Subscription fee amount.
-Refunds
-Except when required by law, paid Subscription fees are non-refundable.
-Certain refund requests for Subscriptions may be considered by the Company on a case-by-case basis and granted at the sole discretion of the Company.
-If the Subscription has been made through an In-app purchase, the Application Store's refund policy will apply. If You wish to request a refund, You may do so by contacting the Application Store directly.
-In-app Purchases
-The Application may include In-app Purchases that allow you to buy products, services or Subscriptions.
-More information about how you may be able to manage In-app Purchases using your Device may be set out in the Application Store's own terms and conditions or in your Device's Help settings.
-In-app Purchases can only be consumed within the Application. If you make a In-app Purchase, that In-app Purchase cannot be cancelled after you have initiated its download. In-app Purchases cannot be redeemed for cash or other consideration or otherwise transferred.
-If any In-app Purchase is not successfully downloaded or does not work once it has been successfully downloaded, we will, after becoming aware of the fault or being notified to the fault by You, investigate the reason for the fault. We will act reasonably in deciding whether to provide You with a replacement In-app Purchase or issue You with a patch to repair the fault. In no event will We charge You to replace or repair the In-app Purchase. In the unlikely event that we are unable to replace or repair the relevant In-app Purchase or are unable to do so within a reasonable period of time and without significant inconvenience to You, We will authorize the Application Store to refund You an amount up to the cost of the relevant In-app Purchase. Alternatively, if You wish to request a refund, You may do so by contacting the Application Store directly.
-You acknowledge and agree that all billing and transaction processes are handled by the Application Store from where you downloaded the Application and are governed by that Application Store's own terms and conditions.
-If you have any payment related issues with In-app Purchases, then you need to contact the Application Store directly.
-Promotions
-Any Promotions made available through the Service may be governed by rules that are separate from these Terms.
-If You participate in any Promotions, please review the applicable rules as well as our Privacy policy. If the rules for a Promotion conflict with these Terms, the Promotion rules will apply.
-User Accounts
-When You create an account with Us, You must provide Us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of Your account on Our Service.
-You are responsible for safeguarding the password that You use to access the Service and for any activities or actions under Your password, whether Your password is with Our Service or a Third-Party Social Media Service.
-You agree not to disclose Your password to any third party. You must notify Us immediately upon becoming aware of any breach of security or unauthorized use of Your account.
-You may not use as a username the name of another person or entity or that is not lawfully available for use, a name or trademark that is subject to any rights of another person or entity other than You without appropriate authorization, or a name that is otherwise offensive, vulgar or obscene.
-Intellectual Property
-The Service and its original content (excluding Content provided by You or other users), features and functionality are and will remain the exclusive property of the Company and its licensors.
-The Service is protected by copyright, trademark, and other laws of both the Country and foreign countries.
-Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of the Company.
-Your Feedback to Us
-You assign all rights, title and interest in any Feedback You provide the Company. If for any reason such assignment is ineffective, You agree to grant the Company a non-exclusive, perpetual, irrevocable, royalty free, worldwide right and license to use, reproduce, disclose, sub-license, distribute, modify and exploit such Feedback without restriction.
-Links to Other Websites
-Our Service may contain links to third-party web sites or services that are not owned or controlled by the Company.
-The Company has no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party web sites or services. You further acknowledge and agree that the Company shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with the use of or reliance on any such content, goods or services available on or through any such web sites or services.
-We strongly advise You to read the terms and conditions and privacy policies of any third-party web sites or services that You visit.
-Termination
-We may terminate or suspend Your Account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if You breach these Terms and Conditions.
-Upon termination, Your right to use the Service will cease immediately. If You wish to terminate Your Account, You may simply discontinue using the Service.
-Limitation of Liability
-Notwithstanding any damages that You might incur, the entire liability of the Company and any of its suppliers under any provision of this Terms and Your exclusive remedy for all of the foregoing shall be limited to the amount actually paid by You through the Service or 100 USD if You haven't purchased anything through the Service.
-To the maximum extent permitted by applicable law, in no event shall the Company or its suppliers be liable for any special, incidental, indirect, or consequential damages whatsoever (including, but not limited to, damages for loss of profits, loss of data or other information, for business interruption, for personal injury, loss of privacy arising out of or in any way related to the use of or inability to use the Service, third-party software and/or third-party hardware used with the Service, or otherwise in connection with any provision of this Terms), even if the Company or any supplier has been advised of the possibility of such damages and even if the remedy fails of its essential purpose.
-Some states do not allow the exclusion of implied warranties or limitation of liability for incidental or consequential damages, which means that some of the above limitations may not apply. In these states, each party's liability will be limited to the greatest extent permitted by law.
-"AS IS" and "AS AVAILABLE" Disclaimer
-The Service is provided to You "AS IS" and "AS AVAILABLE" and with all faults and defects without warranty of any kind. To the maximum extent permitted under applicable law, the Company, on its own behalf and on behalf of its Affiliates and its and their respective licensors and service providers, expressly disclaims all warranties, whether express, implied, statutory or otherwise, with respect to the Service, including all implied warranties of merchantability, fitness for a particular purpose, title and non-infringement, and warranties that may arise out of course of dealing, course of performance, usage or trade practice. Without limitation to the foregoing, the Company provides no warranty or undertaking, and makes no representation of any kind that the Service will meet Your requirements, achieve any intended results, be compatible or work with any other software, applications, systems or services, operate without interruption, meet any performance or reliability standards or be error free or that any errors or defects can or will be corrected.
-Without limiting the foregoing, neither the Company nor any of the company's provider makes any representation or warranty of any kind, express or implied: (i) as to the operation or availability of the Service, or the information, content, and materials or products included thereon; (ii) that the Service will be uninterrupted or error-free; (iii) as to the accuracy, reliability, or currency of any information or content provided through the Service; or (iv) that the Service, its servers, the content, or e-mails sent from or on behalf of the Company are free of viruses, scripts, trojan horses, worms, malware, timebombs or other harmful components.
-Some jurisdictions do not allow the exclusion of certain types of warranties or limitations on applicable statutory rights of a consumer, so some or all of the above exclusions and limitations may not apply to You. But in such a case the exclusions and limitations set forth in this section shall be applied to the greatest extent enforceable under applicable law.
-Governing Law
-The laws of the Country, excluding its conflicts of law rules, shall govern this Terms and Your use of the Service. Your use of the Application may also be subject to other local, state, national, or international laws.
-Disputes Resolution
-If You have any concern or dispute about the Service, You agree to first try to resolve the dispute informally by contacting the Company.
-For European Union (EU) Users
-If You are a European Union consumer, you will benefit from any mandatory provisions of the law of the country in which you are resident in.
-United States Federal Government End Use Provisions
-If You are a U.S. federal government end user, our Service is a "Commercial Item" as that term is defined at 48 C.F.R. §2.101.
-United States Legal Compliance
-You represent and warrant that (i) You are not located in a country that is subject to the United States government embargo, or that has been designated by the United States government as a "terrorist supporting" country, and (ii) You are not listed on any United States government list of prohibited or restricted parties.
-Severability and Waiver
-Severability
-If any provision of these Terms is held to be unenforceable or invalid, such provision will be changed and interpreted to accomplish the objectives of such provision to the greatest extent possible under applicable law and the remaining provisions will continue in full force and effect.
-Waiver
-Except as provided herein, the failure to exercise a right or to require performance of an obligation under these Terms shall not effect a party's ability to exercise such right or require such performance at any time thereafter nor shall the waiver of a breach constitute a waiver of any subsequent breach.
-Translation Interpretation
-These Terms and Conditions may have been translated if We have made them available to You on our Service. You agree that the original English text shall prevail in the case of a dispute.
-Changes to These Terms and Conditions
-We reserve the right, at Our sole discretion, to modify or replace these Terms at any time. If a revision is material We will make reasonable efforts to provide at least 30 days' notice prior to any new terms taking effect. What constitutes a material change will be determined at Our sole discretion.
-By continuing to access or use Our Service after those revisions become effective, You agree to be bound by the revised terms. If You do not agree to the new terms, in whole or in part, please stop using the website and the Service.
-Contact Us
-If you have any questions about these Terms and Conditions, You can contact us:
-* By email: babakin4@gmail.com
+Terms of Service
+Nano Image Edit
+Last Updated: October 20, 2025
+
+1. Acceptance of Terms
+By downloading, installing, or using the Nano Image Edit mobile application (“the App”), you agree to be bound by these Terms of Service (“Terms”).
+ If you do not agree to these Terms, please do not install or use the App.
+These Terms form a legally binding agreement between you and the developer (“we”, “us”, or “our”) regarding your use of the App and related services.
+
+2. Description of Service
+Nano Image Edit is a mobile application that allows users to generate, modify, and enhance images using artificial intelligence (AI) and advanced editing tools.
+ The App is intended for personal and creative use only. Commercial use of the App’s output requires explicit written permission from the developer.
+
+3. In-App Purchases and Subscriptions
+The App may offer optional premium features or content through one-time purchases or auto-renewable subscriptions.
+a. Subscription Options
+Examples of available plans include (prices may vary by region or platform):
+Weekly Subscription: Full access to all AI tools and styles
+
+
+Yearly Subscription: Unlimited premium access for one year at a discounted rate
+
+
+b. Renewal & Cancellation
+Subscriptions renew automatically unless canceled at least 24 hours before the end of the billing period.
+ You can manage or cancel subscriptions anytime in your device’s app store account settings.
+c. Refund Policy
+All payments are handled through the respective app store (Google Play or Apple App Store).
+ We do not process or manage refunds directly. Refunds are subject to the policies of your app store provider.
+d. Fair Use
+We may apply fair usage limits to ensure stable service for all users. Excessive or automated use of AI features may lead to temporary restrictions.
+
+4. User Responsibilities and Restrictions
+You agree not to:
+Use the App for any unlawful, harmful, or exploitative purpose
+
+
+Upload, generate, or share content that is illegal, hateful, sexually explicit, violent, or discriminatory
+
+
+Infringe upon the intellectual property or privacy rights of others
+
+
+Attempt to reverse engineer, modify, or distribute any part of the App
+
+
+Interfere with or disrupt the App’s performance or servers
+
+
+We reserve the right to suspend or terminate your account for any misuse or violation of these Terms.
+
+5. User-Generated Content and AI-Generated Images
+When you upload or generate content using the App:
+You retain ownership of your original uploaded images.
+
+
+You grant us a limited, non-exclusive, revocable license to process your uploads solely to provide the App’s features.
+
+
+AI-generated results are created automatically and may not be unique. Any resemblance to existing works or characters is purely coincidental.
+
+
+You are solely responsible for how you use the generated content.
+ Do not use outputs in ways that violate copyright laws, privacy rights, or applicable regulations.
+We do not claim ownership of your uploaded content or generated images.
+
+6. AI-Powered Image Processing Disclaimer
+The App uses proprietary and/or third-party AI models to generate image results.
+ AI-generated outputs are automatically produced based on user input and may include imperfections, artifacts, or unpredictable variations.
+ We make no guarantees regarding the accuracy, quality, or realism of generated images.
+The results are intended for creative and entertainment purposes only.
+
+7. Termination
+We may suspend or terminate your access to the App at any time if you:
+Violate these Terms
+
+
+Misuse the App
+
+
+Engage in activities that harm other users or the App’s integrity
+
+
+Upon termination, your right to use the App immediately ceases. You may uninstall the App at any time to discontinue use.
+
+8. Disclaimer of Warranties
+The App is provided on an “as-is” and “as-available” basis.
+ We make no warranties, express or implied, regarding:
+Continuous or error-free operation
+
+
+The quality or accuracy of AI-generated outputs
+
+
+Compatibility with all devices or systems
+
+
+Use of the App is at your own risk.
+
+9. Limitation of Liability
+To the fullest extent permitted by law, the developer shall not be liable for any indirect, incidental, or consequential damages resulting from:
+Your use or inability to use the App
+
+
+Errors or delays in AI processing
+
+
+Unauthorized access or loss of your data
+
+
+Use of generated content that violates third-party rights
+
+
+In no case shall our total liability exceed the amount you paid (if any) for the App or related services.
+
+10. Changes to the App and Terms
+We may modify, suspend, or discontinue parts of the App at any time without prior notice.
+ We may also update these Terms occasionally.
+ The updated version will be posted within the App or on our website with a new “Last Updated” date.
+ Continued use of the App constitutes your acceptance of the revised Terms.
+
+11. Governing Law
+These Terms shall be governed and interpreted in accordance with the laws of the jurisdiction in which the developer operates.
+ Any disputes shall be subject to the exclusive jurisdiction of the courts in that region.
+
+12. Contact Us
+If you have any questions about these Terms of Service, please contact us:
+ Email: nanobananaapp93@gmail.com
+
+
 
                         `}
                     </Markdown>
