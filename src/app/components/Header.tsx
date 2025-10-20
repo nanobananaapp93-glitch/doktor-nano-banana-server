@@ -8,9 +8,8 @@ export default function Header() {
         border-b border-gray-300  backdrop-blur-2xl font-mono text-sm px-4 lg:px-0">
             <div className="max-w-3xl flex w-full items-center justify-between">
                 <div className="font-medium text-xl text-indigo-900 flex items-center gap-2">
-                    <Logo className="w-4 h-4" />
                     <Link href='/'>
-                        Music Creation
+                        Image Generation
                     </Link>
                 </div>
                 <div className="flex items-center justify-center gap-1 text-sm font-light text-indigo-900/90">
