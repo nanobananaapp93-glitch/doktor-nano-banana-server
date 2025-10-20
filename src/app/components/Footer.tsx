@@ -10,6 +10,14 @@ export default function Footer() {
              hover:text-white duration-200
                 ">
 
+            </p>
+            <p className="px-6 py-3 rounded-full flex justify-center items-center gap-2
+             hover:text-white duration-200
+                ">
+                <span>© 2025 Server</span>
+                {/* <Link href="https://github.com/gcui-art/suno-api/">
+                </Link> */}
+            </p>
         </footer>
     );
 }
