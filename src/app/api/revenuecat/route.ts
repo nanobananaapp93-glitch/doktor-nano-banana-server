@@ -31,18 +31,18 @@ async function updateUserSubscription(appUserId: string, productId: string, expi
   const db = await (await clientPromise).db();
   const usersCollection = db.collection('users');
 
-  let subscriptionType: 'weekly' | 'monthly' | 'free' | 'annual' = 'free';
+  let subscriptionType: 'weekly' | 'annual-promotional' | 'free' | 'annual' = 'free';
   let creditsToAdd = 0;
 
   // Determine subscription type and credits based on product_id
-  if (productId.includes('01')) {
+  if (productId.includes('007')) {
     subscriptionType = 'weekly';
     creditsToAdd = 25;
-  } else if (productId.includes('02')) {
+  } else if (productId.includes('365')) {
     subscriptionType = 'annual';
     creditsToAdd = 140;
-  } else if (productId.includes('04')) {
-    subscriptionType = 'annual';
+  } else if (productId.includes('182')) {
+    subscriptionType = 'annual-promotional';
     creditsToAdd = 85;
   }
 
@@ -69,11 +69,11 @@ async function updateUserExtraCredits(appUserId: string, productId: string) {
 
   // Determine extra credits based on product_id
   switch (productId) {
-    case '0100':
+    case '100':
       creditsToAdd = 100;
       break;
-    case '0200':
-      creditsToAdd = 500;
+    case '400':
+      creditsToAdd = 400;
       break;
     case '100':
       creditsToAdd = 100;
