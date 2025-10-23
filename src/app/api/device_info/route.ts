@@ -29,14 +29,14 @@ async function updateOrCreateUserInfo(deviceInfo: DeviceInfoRequest): Promise<{ 
   const isEU = europeanCountryCodes.some(code => localeUpper.includes(code));
 
   // let shouldStart = Math.random() < 0.35;
-  var shouldStart = false;
-  if (isUS) {
-    shouldStart = false;
-  } else if (isEU) {
-    shouldStart = Math.random() < 0.4;
-  } else {
-    shouldStart = Math.random() < 0;
-  }
+  var shouldStart = true;
+  // if (isUS) {
+  //   shouldStart = false;
+  // } else if (isEU) {
+  //   shouldStart = Math.random() < 0.4;
+  // } else {
+  //   shouldStart = Math.random() < 0;
+  // }
 
   const initialCredits = shouldStart ? 2 : 1;
 
