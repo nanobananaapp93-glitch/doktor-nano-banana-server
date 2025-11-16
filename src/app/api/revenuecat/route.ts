@@ -37,13 +37,13 @@ async function updateUserSubscription(appUserId: string, productId: string, expi
   // Determine subscription type and credits based on product_id
   if (productId.includes('007')) {
     subscriptionType = 'weekly';
-    creditsToAdd = 40;
+    creditsToAdd = 60;
   } else if (productId.includes('365')) {
     subscriptionType = 'annual';
-    creditsToAdd = 200;
+    creditsToAdd = 400;
   } else if (productId.includes('182')) {
     subscriptionType = 'annual-promotional';
-    creditsToAdd = 120;
+    creditsToAdd = 160;
   }
 
   await usersCollection.updateOne(
