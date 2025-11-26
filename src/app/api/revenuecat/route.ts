@@ -24,10 +24,11 @@ interface WebhookEvent {
     app_user_id?: string;
     product_id?: string;
     expiration_at_ms?: number;
+    aliases?: string[];
   };
 }
 
-async function updateUserSubscription(appUserId: string, productId: string, expirationAtMs: number) {
+async function updateUserSubscription(appUserId: string, productId: string, expirationAtMs: number, aliases?: string[]) {
   const db = await (await clientPromise).db();
   const usersCollection = db.collection('users');
 
@@ -46,22 +47,38 @@ async function updateUserSubscription(appUserId: string, productId: string, expi
     creditsToAdd = 150;
   }
 
+  const updateData = {
+    $set: {
+      credits: creditsToAdd,
+      updatedAt: new Date(),
+      subscriptionStatus: subscriptionType,
+      subscriptionExpiresAt: new Date(expirationAtMs),
+      lastCreditUpdate: new Date()
+    }
+  };
+
+  // Update the main app_user_id
   await usersCollection.updateOne(
     { deviceId: appUserId },
-    {
-      $set: {
-        credits: creditsToAdd,
-        updatedAt: new Date(),
-        subscriptionStatus: subscriptionType,
-        subscriptionExpiresAt: new Date(expirationAtMs),
-        lastCreditUpdate: new Date()
-      }
-    },
+    updateData,
     { upsert: true }
   );
+
+  // Update all aliases if they exist
+  if (aliases && aliases.length > 0) {
+    for (const alias of aliases) {
+      if (alias !== appUserId) {
+        await usersCollection.updateOne(
+          { deviceId: alias },
+          updateData,
+          { upsert: true }
+        );
+      }
+    }
+  }
 }
 
-async function updateUserExtraCredits(appUserId: string, productId: string) {
+async function updateUserExtraCredits(appUserId: string, productId: string, aliases?: string[]) {
   const db = await (await clientPromise).db();
   const usersCollection = db.collection('users');
 
@@ -75,9 +92,6 @@ async function updateUserExtraCredits(appUserId: string, productId: string) {
     case '400':
       creditsToAdd = 400;
       break;
-    case '100':
-      creditsToAdd = 100;
-      break;
     case '250':
       creditsToAdd = 250;
       break;
@@ -89,28 +103,41 @@ async function updateUserExtraCredits(appUserId: string, productId: string) {
       break;
   }
 
-  const currentUser = await usersCollection.findOne({ deviceId: appUserId });
-
-  if (currentUser) {
-    // Initialize extraCredits to 0 if it's null before incrementing
-    await usersCollection.updateOne(
-      { deviceId: appUserId },
-      {
-        $set: {
-          extraCredits: (currentUser.extraCredits || 0) + creditsToAdd,
-          updatedAt: new Date()
-        }
+  // Collect all user IDs to update (main user + aliases)
+  const userIds = [appUserId];
+  if (aliases && aliases.length > 0) {
+    aliases.forEach(alias => {
+      if (alias !== appUserId) {
+        userIds.push(alias);
       }
-    );
-  } else {
-    // If the user document doesn't exist, create a new one with default values
-    await usersCollection.insertOne({
-      deviceId: appUserId,
-      extraCredits: creditsToAdd,
-      subscriptionStatus: 'free',
-      credits: 0,
-      updatedAt: new Date()
     });
+  }
+
+  // Update each user ID
+  for (const userId of userIds) {
+    const currentUser = await usersCollection.findOne({ deviceId: userId });
+
+    if (currentUser) {
+      // Initialize extraCredits to 0 if it's null before incrementing
+      await usersCollection.updateOne(
+        { deviceId: userId },
+        {
+          $set: {
+            extraCredits: (currentUser.extraCredits || 0) + creditsToAdd,
+            updatedAt: new Date()
+          }
+        }
+      );
+    } else {
+      // If the user document doesn't exist, create a new one with default values
+      await usersCollection.insertOne({
+        deviceId: userId,
+        extraCredits: creditsToAdd,
+        subscriptionStatus: 'free',
+        credits: 0,
+        updatedAt: new Date()
+      });
+    }
   }
 }
 
@@ -186,14 +213,14 @@ export async function POST(req: NextRequest) {
         case 'RENEWAL':
         case 'TEST':
           if (event.app_user_id && event.product_id && event.expiration_at_ms) {
-            await updateUserSubscription(event.app_user_id, event.product_id, event.expiration_at_ms);
+            await updateUserSubscription(event.app_user_id, event.product_id, event.expiration_at_ms, event.aliases);
           } else {
             console.log('Missing information for purchase/renewal event');
           }
           break;
         case 'NON_RENEWING_PURCHASE':
           if (event.app_user_id && event.product_id) {
-            await updateUserExtraCredits(event.app_user_id, event.product_id);
+            await updateUserExtraCredits(event.app_user_id, event.product_id, event.aliases);
           } else {
             console.log('Missing information for non-renewing purchase event');
           }
