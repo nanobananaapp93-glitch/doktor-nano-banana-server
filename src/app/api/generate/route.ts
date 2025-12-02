@@ -5,7 +5,7 @@ import { fal } from "@fal-ai/client";
 
 const PHOTO_GENERATION_COST = 1;
 
-export const maxDuration = 60;
+export const maxDuration = 240;
 export const dynamic = "force-dynamic";
 
 // Prompt generation function based on style
