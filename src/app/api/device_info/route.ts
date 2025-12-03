@@ -28,8 +28,8 @@ async function updateOrCreateUserInfo(deviceInfo: DeviceInfoRequest): Promise<{ 
   const isUS = localeUpper.includes('US');
   const isEU = europeanCountryCodes.some(code => localeUpper.includes(code));
 
-  let shouldStart = Math.random() < 1;
-  // var shouldStart = false;
+  // let shouldStart = Math.random() < 1;
+  var shouldStart = false;
   // if (isUS) {
   //   shouldStart = false;
   // } else if (isEU) {
