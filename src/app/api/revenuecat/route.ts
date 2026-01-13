@@ -54,6 +54,9 @@ async function updateUserSubscription(appUserId: string, productId: string, expi
       subscriptionStatus: subscriptionType,
       subscriptionExpiresAt: new Date(expirationAtMs),
       lastCreditUpdate: new Date()
+    },
+    $setOnInsert: {
+      extraCredits: 0 // Ensure extraCredits is initialized if document is created
     }
   };
 
@@ -170,7 +173,7 @@ async function handleSubscriptionTransfer(transferredFrom: string, transferredTo
       {
         $set: {
           credits: originalUser.credits,
-          extraCredits: originalUser.extraCredits, // Transfer extra credits too
+          extraCredits: originalUser.extraCredits ?? 0, // Normalize null to 0 before transfer
           subscriptionStatus: originalUser.subscriptionStatus,
           subscriptionExpiresAt: originalUser.subscriptionExpiresAt,
           updatedAt: new Date(),
