@@ -492,11 +492,16 @@ async function deductUserCredit(deviceId: string) {
     throw new Error('Insufficient credits for deduction.');
   }
 
+  // Normalize extraCredits for comparison (null -> 0)
+  const normalizedExtraCredits = user.extraCredits ?? 0;
+
   const result = await usersCollection.updateOne(
-    { 
+    {
       deviceId: deviceId,
       credits: user.credits,
-      extraCredits: user.extraCredits,
+      $expr: {
+        $eq: [{ $ifNull: ["$extraCredits", 0] }, normalizedExtraCredits]
+      }
     },
     {
       $inc: {
