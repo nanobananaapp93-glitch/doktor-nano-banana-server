@@ -442,85 +442,56 @@ function generateImagePrompt(userPrompt: string, style: string): string {
   }
 }
 
-async function deductUserCredit(deviceId: string, retryCount = 0): Promise<void> {
+async function deductUserCredit(deviceId: string): Promise<void> {
   const db = await (await clientPromise).db();
   const usersCollection = db.collection('users');
 
-  const user = await usersCollection.findOne({ deviceId: deviceId });
-
-  if (!user) {
-    throw new Error(`User not found for deviceId: ${deviceId}`);
-  }
-
-  // Normalize credits to numbers to handle potential type inconsistencies
-  const subscriptionCredits = Number(user.credits) || 0;
-  const extraCredits = Number(user.extraCredits) || 0;
-
-  let creditsToDeduct = PHOTO_GENERATION_COST;
-
-  const deductFromSubscription = Math.min(subscriptionCredits, creditsToDeduct);
-  creditsToDeduct -= deductFromSubscription;
-
-  const deductFromExtra = Math.min(extraCredits, creditsToDeduct);
-  creditsToDeduct -= deductFromExtra;
-
-  if (creditsToDeduct > 0) {
-    throw new Error('Insufficient credits for deduction.');
-  }
-
-  // Build the update operation
-  const updateOperation: any = {
-    $inc: {
-      credits: -deductFromSubscription,
-      totalCreditsSpent: PHOTO_GENERATION_COST,
-    },
-    $set: {
-      updatedAt: new Date(),
-    }
-  };
-
-  // Only increment extraCredits if we're actually deducting from it
-  // This avoids issues with null values in the database
-  if (deductFromExtra > 0) {
-    updateOperation.$inc.extraCredits = -deductFromExtra;
-  }
-
-  const result = await usersCollection.updateOne(
+  // Use atomic $inc with conditional checks to prevent race conditions
+  // This approach doesn't use optimistic locking, making it safe for concurrent requests
+  const result = await usersCollection.findOneAndUpdate(
     {
       deviceId: deviceId,
-      credits: subscriptionCredits,
+      $expr: {
+        $gte: [
+          { $add: [{ $ifNull: ["$credits", 0] }, { $ifNull: ["$extraCredits", 0] }] },
+          PHOTO_GENERATION_COST
+        ]
+      }
     },
-    updateOperation
+    [
+      {
+        $set: {
+          credits: {
+            $cond: {
+              if: { $gte: [{ $ifNull: ["$credits", 0] }, PHOTO_GENERATION_COST] },
+              then: { $subtract: [{ $ifNull: ["$credits", 0] }, PHOTO_GENERATION_COST] },
+              else: 0
+            }
+          },
+          extraCredits: {
+            $cond: {
+              if: { $gte: [{ $ifNull: ["$credits", 0] }, PHOTO_GENERATION_COST] },
+              then: { $ifNull: ["$extraCredits", 0] },
+              else: {
+                $subtract: [
+                  { $add: [{ $ifNull: ["$credits", 0] }, { $ifNull: ["$extraCredits", 0] }] },
+                  PHOTO_GENERATION_COST
+                ]
+              }
+            }
+          },
+          totalCreditsSpent: {
+            $add: [{ $ifNull: ["$totalCreditsSpent", 0] }, PHOTO_GENERATION_COST]
+          },
+          updatedAt: new Date()
+        }
+      }
+    ],
+    { returnDocument: 'after' }
   );
 
-  if (result.matchedCount === 0) {
-    // Retry once if this is the first attempt
-    if (retryCount === 0) {
-      console.warn('Credit deduction failed on first attempt, retrying...', { deviceId });
-      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
-      return deductUserCredit(deviceId, 1);
-    }
-
-    // Log detailed information for debugging
-    console.error('Credit deduction failed after retry:', {
-      deviceId,
-      expectedCredits: subscriptionCredits,
-      rawCredits: user.credits,
-      creditsType: typeof user.credits,
-      deductFromSubscription,
-      deductFromExtra,
-      updateOperation
-    });
-
-    // Check current state of user
-    const currentUser = await usersCollection.findOne({ deviceId: deviceId });
-    console.error('Current user state:', {
-      currentCredits: currentUser?.credits,
-      currentExtraCredits: currentUser?.extraCredits,
-      creditsType: typeof currentUser?.credits
-    });
-
-    throw new Error('Credit deduction failed due to a concurrent request. Please try again.');
+  if (!result) {
+    throw new Error('Insufficient credits or user not found');
   }
 }
 
