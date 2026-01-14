@@ -520,6 +520,32 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Verify user has sufficient credits BEFORE calling fal.ai
+    const db = await (await clientPromise).db();
+    const usersCollection = db.collection('users');
+    const user = await usersCollection.findOne({ deviceId: deviceId });
+
+    if (!user) {
+      return new NextResponse(JSON.stringify({ error: 'User not found' }), {
+        status: 404,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
+
+    const totalCredits = (Number(user.credits) || 0) + (Number(user.extraCredits) || 0);
+    if (totalCredits < PHOTO_GENERATION_COST) {
+      return new NextResponse(JSON.stringify({ error: 'Insufficient credits' }), {
+        status: 402,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
+
     // Generate the appropriate prompt based on style
     const generatedPrompt = style ? generateImagePrompt(prompt, style) : prompt;
 
@@ -538,7 +564,6 @@ export async function POST(req: NextRequest) {
 
     await deductUserCredit(deviceId);
 
-    const db = await (await clientPromise).db();
     const photosCollection = db.collection('photos');
     
     const newPhotoRecord = {
