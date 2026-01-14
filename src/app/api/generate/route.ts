@@ -442,32 +442,7 @@ function generateImagePrompt(userPrompt: string, style: string): string {
   }
 }
 
-async function verifyUserCredits(deviceId: string) {
-  const db = await (await clientPromise).db();
-  const usersCollection = db.collection('users');
-  
-  const user = await usersCollection.findOne({ deviceId: deviceId });
-  
-  if (!user) {
-    throw new Error(`User not found for deviceId: ${deviceId}`);
-  }
-
-  const subscriptionCredits = user.credits || 0;
-  const extraCredits = user.extraCredits || 0;
-  const totalAvailableCredits = subscriptionCredits + extraCredits;
-
-  if (totalAvailableCredits < PHOTO_GENERATION_COST) {
-    throw new Error('Insufficient credits');
-  }
-
-  return {
-    subscriptionCredits,
-    extraCredits,
-    totalCreditsSpent: user.totalCreditsSpent || 0,
-  };
-}
-
-async function deductUserCredit(deviceId: string) {
+async function deductUserCredit(deviceId: string, retryCount = 0): Promise<void> {
   const db = await (await clientPromise).db();
   const usersCollection = db.collection('users');
 
@@ -477,14 +452,15 @@ async function deductUserCredit(deviceId: string) {
     throw new Error(`User not found for deviceId: ${deviceId}`);
   }
 
-  const subscriptionCredits = user.credits || 0;
-  const extraCredits = user.extraCredits || 0;
+  // Normalize credits to numbers to handle potential type inconsistencies
+  const subscriptionCredits = Number(user.credits) || 0;
+  const extraCredits = Number(user.extraCredits) || 0;
 
   let creditsToDeduct = PHOTO_GENERATION_COST;
-  
+
   const deductFromSubscription = Math.min(subscriptionCredits, creditsToDeduct);
   creditsToDeduct -= deductFromSubscription;
-  
+
   const deductFromExtra = Math.min(extraCredits, creditsToDeduct);
   creditsToDeduct -= deductFromExtra;
 
@@ -492,30 +468,58 @@ async function deductUserCredit(deviceId: string) {
     throw new Error('Insufficient credits for deduction.');
   }
 
-  // Normalize extraCredits for comparison (null -> 0)
-  const normalizedExtraCredits = user.extraCredits ?? 0;
+  // Build the update operation
+  const updateOperation: any = {
+    $inc: {
+      credits: -deductFromSubscription,
+      totalCreditsSpent: PHOTO_GENERATION_COST,
+    },
+    $set: {
+      updatedAt: new Date(),
+    }
+  };
+
+  // Only increment extraCredits if we're actually deducting from it
+  // This avoids issues with null values in the database
+  if (deductFromExtra > 0) {
+    updateOperation.$inc.extraCredits = -deductFromExtra;
+  }
 
   const result = await usersCollection.updateOne(
     {
       deviceId: deviceId,
-      credits: user.credits,
-      $expr: {
-        $eq: [{ $ifNull: ["$extraCredits", 0] }, normalizedExtraCredits]
-      }
+      credits: subscriptionCredits,
     },
-    {
-      $inc: {
-        credits: -deductFromSubscription,
-        extraCredits: -deductFromExtra,
-        totalCreditsSpent: PHOTO_GENERATION_COST,
-      },
-      $set: {
-        updatedAt: new Date(),
-      }
-    }
+    updateOperation
   );
 
   if (result.matchedCount === 0) {
+    // Retry once if this is the first attempt
+    if (retryCount === 0) {
+      console.warn('Credit deduction failed on first attempt, retrying...', { deviceId });
+      await new Promise(resolve => setTimeout(resolve, 100)); // Small delay
+      return deductUserCredit(deviceId, 1);
+    }
+
+    // Log detailed information for debugging
+    console.error('Credit deduction failed after retry:', {
+      deviceId,
+      expectedCredits: subscriptionCredits,
+      rawCredits: user.credits,
+      creditsType: typeof user.credits,
+      deductFromSubscription,
+      deductFromExtra,
+      updateOperation
+    });
+
+    // Check current state of user
+    const currentUser = await usersCollection.findOne({ deviceId: deviceId });
+    console.error('Current user state:', {
+      currentCredits: currentUser?.credits,
+      currentExtraCredits: currentUser?.extraCredits,
+      creditsType: typeof currentUser?.credits
+    });
+
     throw new Error('Credit deduction failed due to a concurrent request. Please try again.');
   }
 }
@@ -544,8 +548,6 @@ export async function POST(req: NextRequest) {
         }
       });
     }
-
-    await verifyUserCredits(deviceId);
 
     // Generate the appropriate prompt based on style
     const generatedPrompt = style ? generateImagePrompt(prompt, style) : prompt;
