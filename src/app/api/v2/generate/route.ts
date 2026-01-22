@@ -1,14 +1,22 @@
 import { NextResponse, NextRequest } from "next/server";
 import { corsHeaders } from "@/lib/utils";
-import clientPromise from '../../../lib/mongodb';
+import clientPromise from '../../../../lib/mongodb';
 import { fal } from "@fal-ai/client";
 
 const PHOTO_GENERATION_COST = 1;
 
-export const maxDuration = 240;
+export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 
-// Prompt generation function based on style
+// Get the base URL for webhooks
+function getWebhookUrl(): string {
+  const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+  return `${baseUrl}/api/v2/generate/webhook`;
+}
+
+// Prompt generation function based on style (copied from v1)
 function generateImagePrompt(userPrompt: string, style: string): string {
   switch (style) {
     // ============ STYLES REQUIRING USER INPUT ============
@@ -112,7 +120,6 @@ function generateImagePrompt(userPrompt: string, style: string): string {
         const color = typeof parsed?.color === 'string' && parsed.color.trim() ? parsed.color.trim() : 'natural';
         return `Using the provided portrait image, change the hairstyle to ${hairstyle} with ${color} color and ${length} length. Maintain realistic hair texture and natural integration with the subject's facial features and head shape. The new hairstyle should complement the subject's face shape and look naturally styled.`;
       } catch (e) {
-        // Fallback: try parsing semicolon-delimited format "hairstyle; length; color"
         const parts = userPrompt.split(';').map(p => p.trim()).filter(Boolean);
         const hairstyle = parts[0] || 'modern style';
         const length = parts[1] || 'medium';
@@ -140,7 +147,7 @@ function generateImagePrompt(userPrompt: string, style: string): string {
           'Moderate': 'Using the provided image, enhance the expressions for all visible subjects to a confident, photogenic smile. Gently increase lip curvature, reveal upper teeth naturally, and even minor asymmetries. Apply controlled whitening and light alignment refinement while preserving realistic gum lines, tooth shape, and natural sheen.',
           'Big': 'Using the provided image, elevate the expressions for all visible subjects to a joyful, energetic smile. Increase lip curvature and openness while maintaining realistic facial folds and cheek volume. Reveal teeth naturally with balanced whitening and careful alignment cleanup, preserving authentic anatomy and individuality.',
           'Brightest': 'Using the provided image, transform the expressions for all visible subjects into a radiant, camera-ready smile. Maximize lip curvature and brightness while keeping skin texture, dimples, and nasolabial folds natural. Reveal teeth with high clarity, apply premium whitening without overexposure, and ensure proportions remain true to each person.',
-          'None': 'Using the provided image, preserve each subject’s current expression exactly as captured without introducing additional smiling. Perform only minimal cleanup for natural appearance while keeping all features unchanged.',
+          'None': 'Using the provided image, preserve each subject\'s current expression exactly as captured without introducing additional smiling. Perform only minimal cleanup for natural appearance while keeping all features unchanged.',
         };
         return promptByLabel[label] || promptByLabel['Moderate'];
       } catch (e) {
@@ -165,7 +172,7 @@ function generateImagePrompt(userPrompt: string, style: string): string {
           'Moderate': 'Using the provided image, enhance the expressions for all visible subjects to a confident, photogenic smile. Gently increase lip curvature, reveal upper teeth naturally, and even minor asymmetries. Apply controlled whitening and light alignment refinement while preserving realistic gum lines, tooth shape, and natural sheen.',
           'Big': 'Using the provided image, elevate the expressions for all visible subjects to a joyful, energetic smile. Increase lip curvature and openness while maintaining realistic facial folds and cheek volume. Reveal teeth naturally with balanced whitening and careful alignment cleanup, preserving authentic anatomy and individuality.',
           'Brightest': 'Using the provided image, transform the expressions for all visible subjects into a radiant, camera-ready smile. Maximize lip curvature and brightness while keeping skin texture, dimples, and nasolabial folds natural. Reveal teeth with high clarity, apply premium whitening without overexposure, and ensure proportions remain true to each person.',
-          'None': 'Using the provided image, preserve each subject’s current expression exactly as captured without introducing additional smiling. Perform only minimal cleanup for natural appearance while keeping all features unchanged.',
+          'None': 'Using the provided image, preserve each subject\'s current expression exactly as captured without introducing additional smiling. Perform only minimal cleanup for natural appearance while keeping all features unchanged.',
         };
         return promptByLabel[resolved] || promptByLabel['Moderate'];
       }
@@ -181,8 +188,6 @@ function generateImagePrompt(userPrompt: string, style: string): string {
         const lengthVal = typeof rawLength === 'number' && isFinite(rawLength) ? rawLength : undefined;
         const densityVal = rawDensity != null ? parseFloat(String(rawDensity)) : undefined;
 
-        // Map numeric length (in mm assumption or abstract scale) to descriptive phrase
-        // Thresholds chosen to be robust regardless of unit: 0=clean, 1-3=stubble, 4-10=short, 11-20=medium, >20=long
         let lengthPhrase = 'medium length';
         if (lengthVal != null) {
           if (lengthVal <= 0) lengthPhrase = 'clean-shaven length';
@@ -192,7 +197,6 @@ function generateImagePrompt(userPrompt: string, style: string): string {
           else lengthPhrase = 'long, fuller length (>20 mm)';
         }
 
-        // Map density [0.0–1.0] to descriptive phrase
         let densityPhrase = 'normal density';
         if (densityVal != null && isFinite(densityVal)) {
           const d = Math.max(0, Math.min(1, densityVal));
@@ -205,12 +209,10 @@ function generateImagePrompt(userPrompt: string, style: string): string {
 
         return `Using the provided portrait image, modify the beard to ${preset} style with ${lengthPhrase}, ${densityPhrase}, and ${color || 'natural'} color. Ensure natural hair growth patterns and realistic integration with facial features and skin tone. Maintain crisp edges, even coverage, and a well-groomed finish that complements the subject's face shape.`;
       } catch (e) {
-        // Text fallback: try to extract preset, length, density, color from a semicolon- or comma-delimited string
         const text = userPrompt.trim();
         const presets = ["stubble", "short_boxed", "full_beard", "goatee", "van_dyke", "beard_fade"];
         const foundPreset = presets.find(p => text.toLowerCase().includes(p.replace("_", " ")) ) || 'stubble';
 
-        // Extract simple key-value pairs like "length: 12" or "density: 0.65" or "color: brown"
         const lengthMatch = text.match(/length\s*[:=]\s*(\d+(?:\.\d+)?)/i);
         const densityMatch = text.match(/density\s*[:=]\s*(\d+(?:\.\d+)?)/i);
         const colorMatch = text.match(/color\s*[:=]\s*([\w\s-]+)/i);
@@ -294,7 +296,6 @@ function generateImagePrompt(userPrompt: string, style: string): string {
         const areas = ["waist", "arms", "legs", "chest", "shoulders", "hips", "back", "neck"];
         const looks = ["slimmer", "more muscular", "curvier", "elongated", "toned", "broader"];
 
-        // Fallback: try semicolon format "area;look"
         const parts = userPrompt.split(';').map(p => p.trim().toLowerCase()).filter(Boolean);
         const areaFromParts = parts[0] && areas.includes(parts[0]) ? parts[0] : undefined;
         const lookFromParts = parts[1] && looks.includes(parts[1]) ? parts[1] : undefined;
@@ -437,7 +438,6 @@ function generateImagePrompt(userPrompt: string, style: string): string {
       return matchedSuggestion || userPrompt.trim();
 
     default:
-      // If style is not recognized, return the original prompt
       return userPrompt.trim();
   }
 }
@@ -446,8 +446,6 @@ async function deductUserCredit(deviceId: string): Promise<void> {
   const db = await (await clientPromise).db();
   const usersCollection = db.collection('users');
 
-  // Use atomic $inc with conditional checks to prevent race conditions
-  // This approach doesn't use optimistic locking, making it safe for concurrent requests
   const result = await usersCollection.findOneAndUpdate(
     {
       deviceId: deviceId,
@@ -495,6 +493,22 @@ async function deductUserCredit(deviceId: string): Promise<void> {
   }
 }
 
+async function refundUserCredit(deviceId: string): Promise<void> {
+  const db = await (await clientPromise).db();
+  const usersCollection = db.collection('users');
+
+  await usersCollection.updateOne(
+    { deviceId: deviceId },
+    {
+      $inc: {
+        credits: PHOTO_GENERATION_COST,
+        totalCreditsSpent: -PHOTO_GENERATION_COST
+      },
+      $set: { updatedAt: new Date() }
+    }
+  );
+}
+
 export async function POST(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -506,7 +520,6 @@ export async function POST(req: NextRequest) {
     const prompt: string | undefined = body.prompt;
     const num_images: number | undefined = body.num_images;
     const output_format: string | undefined = body.output_format;
-    const sync_mode: boolean | undefined = body.sync_mode;
     const image_urls: string[] | undefined = body.image_urls;
     const style: string | undefined = body.style;
 
@@ -520,7 +533,7 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Verify user has sufficient credits BEFORE calling fal.ai
+    // Verify user has sufficient credits BEFORE submitting to fal.ai
     const db = await (await clientPromise).db();
     const usersCollection = db.collection('users');
     const user = await usersCollection.findOne({ deviceId: deviceId });
@@ -546,57 +559,103 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Deduct credits immediately
+    await deductUserCredit(deviceId);
+
     // Generate the appropriate prompt based on style
     const generatedPrompt = style ? generateImagePrompt(prompt, style) : prompt;
 
-    const result = await fal.subscribe("fal-ai/nano-banana/edit", {
-      input: {
-        prompt: generatedPrompt,
-        image_urls,
-        num_images: num_images ?? 1,
-        output_format: (output_format ?? 'jpeg') as 'jpeg' | 'png' | 'webp',
-        sync_mode: sync_mode ?? false,
-      },
-      logs: true,
-    });
-
-    const generation = result.data as any;
-
-    await deductUserCredit(deviceId);
-
+    // Create a pending record in the database BEFORE submitting to fal.ai
     const photosCollection = db.collection('photos');
-    
-    const newPhotoRecord = {
+
+    const pendingRecord = {
       deviceId,
       prompt,
       generatedPrompt,
-      images: generation?.images,
-      description: generation?.description,
+      images: null,
+      description: null,
       style: style ?? null,
-      falRequestId: result.requestId,
+      falRequestId: null, // Will be updated after fal.ai submission
       model: "fal-ai/nano-banana/edit",
-      status: 'completed',
+      status: 'processing',
+      creditsDeducted: PHOTO_GENERATION_COST,
+      error: null,
       createdAt: new Date(),
+      completedAt: null,
       updatedAt: new Date(),
     };
 
-    await photosCollection.insertOne(newPhotoRecord);
+    const insertResult = await photosCollection.insertOne(pendingRecord);
+    const requestId = insertResult.insertedId.toString();
 
-    return new NextResponse(JSON.stringify({
-      images: generation?.images,
-      description: generation?.description,
-      style: style ?? null,
-    }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        ...corsHeaders
-      }
-    });
+    // Submit to fal.ai queue (non-blocking)
+    try {
+      const webhookUrl = getWebhookUrl();
+
+      const queueResult = await fal.queue.submit("fal-ai/nano-banana/edit", {
+        input: {
+          prompt: generatedPrompt,
+          image_urls,
+          num_images: num_images ?? 1,
+          output_format: (output_format ?? 'jpeg') as 'jpeg' | 'png' | 'webp',
+        },
+        webhookUrl: `${webhookUrl}?requestId=${requestId}`,
+      });
+
+      // Update the record with fal.ai request ID
+      await photosCollection.updateOne(
+        { _id: insertResult.insertedId },
+        {
+          $set: {
+            falRequestId: queueResult.request_id,
+            updatedAt: new Date()
+          }
+        }
+      );
+
+      return new NextResponse(JSON.stringify({
+        requestId,
+        status: 'processing',
+        message: 'Generation started. Poll /api/v2/generate/status for results.',
+      }), {
+        status: 202,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+
+    } catch (falError: any) {
+      // If fal.ai submission fails, refund credits and mark as failed
+      await refundUserCredit(deviceId);
+
+      await photosCollection.updateOne(
+        { _id: insertResult.insertedId },
+        {
+          $set: {
+            status: 'failed',
+            error: falError?.message || 'Failed to submit to image generation service',
+            updatedAt: new Date()
+          }
+        }
+      );
+
+      return new NextResponse(JSON.stringify({
+        error: 'Failed to start image generation',
+        requestId
+      }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          ...corsHeaders
+        }
+      });
+    }
+
   } catch (error: any) {
     const message = error?.message || 'Internal server error';
 
-    if (message === 'Insufficient credits') {
+    if (message === 'Insufficient credits or user not found') {
       return new NextResponse(JSON.stringify({ error: 'Insufficient credits' }), {
         status: 402,
         headers: {
@@ -609,16 +668,6 @@ export async function POST(req: NextRequest) {
     if (message.includes('User not found')) {
       return new NextResponse(JSON.stringify({ error: message }), {
         status: 404,
-        headers: {
-          'Content-Type': 'application/json',
-          ...corsHeaders
-        }
-      });
-    }
-
-    if (message.includes('too long') || message.includes('Invalid') || message.includes('validation')) {
-      return new NextResponse(JSON.stringify({ error: message }), {
-        status: 400,
         headers: {
           'Content-Type': 'application/json',
           ...corsHeaders
@@ -642,30 +691,3 @@ export async function OPTIONS(request: Request) {
     headers: corsHeaders
   });
 }
-
-/*
- * Comprehensive Prompt Generation System (30+ Styles):
- * This endpoint automatically generates appropriate prompts based on the 'style' parameter.
- * All prompts follow Nano Banana best practices with "Using the provided image" context preservation.
- *
- * ============ STYLES REQUIRING USER INPUT (7 styles) ============
- * character_capsules, iphone_selfie, edit_text, time_based, ingredients_to_dish,
- * style_fusion, anatomy_illustration
- *
- * ============ MAINTOOLS STYLES - REFINED (13 styles) ============
- * remove_object, remove_background, change_background, upscale_image, expand_image,
- * glam_studio, hair_styler, smile_fix, beard_style, car_modify, skin_fix, age_changer, shape_tune
- *
- * ============ CREATIVE TRANSFORM STYLES (10 styles) ============
- * nano_3d_figure, chibi_knitted_doll, character_plush, funko_pop_figure, ghibli_style,
- * game_ui, line_to_image, photo_grid_pose, retro_16bit_character, ai_saree
- *
- * ============ TWO-IMAGE EDITING STYLES (4 styles) ============
- * virtual_try_on, artistic_style_transfer, virtual_hairstyle, combine_objects
- *
- * Features:
- * - JSON parameter parsing for complex styles with fallback to text parsing
- * - Professional quality requirements with context preservation
- * - Hyper-specific descriptions optimized for AI model performance
- * - Default prompts for two-image styles when user input is empty
- */
